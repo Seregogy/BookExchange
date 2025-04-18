@@ -1,0 +1,258 @@
+﻿<Page
+    x:Class="Store.View.BookPage"
+    xmlns:viewModelData="using:Store.ViewModel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    
+    xmlns:local="using:Store.View"
+
+    xmlns:helpers="using:Store.Helpers"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:model="using:Store.Model"
+    xmlns:converters="using:Store.Helpers.Converters"    
+    xmlns:localControls="using:Store.View.Controls"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:labsMarquee="using:CommunityToolkit.Labs.WinUI.MarqueeTextRns"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:md="using:CommunityToolkit.Labs.WinUI.MarkdownTextBlock"
+
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <helpers:CostConverter x:Key="CostConverter"/>
+        <converters:UnixToDataStringConverter x:Key="UnixTimeStampConverter"/>
+        <converters:BoolToImageStretch x:Key="BoolToStretch"/>
+    </Page.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <FlipView x:Name="ImageFlipView"
+                  CornerRadius="0"
+                  Grid.Column="0" 
+                  VerticalAlignment="Stretch" 
+                  HorizontalAlignment="Stretch"
+                  ItemsSource="{x:Bind Product.Pictures}">
+            
+            <FlipView.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                    <Image Stretch="UniformToFill">
+                        <Image.Source>
+                            <BitmapImage UriSource="{x:Bind}"/>
+                        </Image.Source>
+                    </Image>
+                </DataTemplate>
+            </FlipView.ItemTemplate>
+        </FlipView>
+        
+        <Button x:Name="BackButton"
+                Margin="15"
+                Grid.Column="0"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Left"
+                Click="BackButton_Click"
+                Background="{StaticResource SystemControlAcrylicElementBrush}"
+                IsEnabled="{x:Bind Frame.CanGoBack, Mode=OneWay}" 
+                ToolTipService.ToolTip="Back">
+            
+            <Button.KeyboardAccelerators>
+                <KeyboardAccelerator Key="Z" Modifiers="Control"/>
+            </Button.KeyboardAccelerators>
+
+            <FontIcon Glyph="&#xE72B;" />
+        </Button>
+
+        
+
+        <muxc:PipsPager Grid.Column="0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        NumberOfPages="{x:Bind ImageFlipView.Items.Count}"
+                        SelectedPageIndex="{x:Bind ImageFlipView.SelectedIndex, Mode=OneWay}"
+                        SelectedIndexChanged="PipsPager_SelectedIndexChanged"/>
+
+        <ScrollViewer 
+            Grid.Column="1">
+            <Grid>
+                <StackPanel x:Name="ProductDataContainer" 
+                            Padding="50, 200, 50, 150"
+                            Grid.Column="1" 
+                            Background="{StaticResource LayerFillColorDefaultBrush}"
+                            Spacing="12">
+
+                    <StackPanel x:Name="ProductHeader" 
+                                Spacing="7">
+                        <TextBlock Text="{x:Bind Product.Name}" 
+                                   Style="{StaticResource DisplayTextBlockStyle}"/>
+
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+
+                            <TextBlock Text="{x:Bind Product.Category}" 
+                                       VerticalAlignment="Center"
+                                       Style="{StaticResource BodyStrongTextBlockStyle}"/>
+
+                            <Border Background="{StaticResource CardBackgroundFillColorSecondaryBrush}"
+                                    Width="2" 
+                                    VerticalAlignment="Stretch"/>
+
+                            <TextBlock Text="{x:Bind Product.Provider}" 
+                                       VerticalAlignment="Center"
+                                       Style="{StaticResource BodyStrongTextBlockStyle}"
+                                       Foreground="{StaticResource TextFillColorTertiaryBrush}"/>
+
+                        </StackPanel>
+
+                        <TextBlock Text="{x:Bind Product.Product.Id}" 
+                                   Style="{StaticResource BodyStrongTextBlockStyle}"
+                                   Foreground="{StaticResource TextFillColorTertiaryBrush}"/>
+                        
+                        <RatingControl x:Name="RatingViewer"
+                                       Value="{x:Bind Product.Rating}" 
+                                       HorizontalAlignment="Left" 
+                                       VerticalAlignment="Center" 
+                                       IsReadOnly="True"
+                                       Caption="{x:Bind Product.Rating}"/>
+
+                        <labs:TokenView x:Name="Tags"
+                                        IsWrapped="True"                              
+                                        SelectionMode="None"
+                                        ItemsSource="{x:Bind Product.Tags}"/>
+                    </StackPanel>
+
+                    <StackPanel Spacing="7" Margin="0 12 0 12">
+                        <md:MarkdownTextBlock x:Name="MarkdownTextBlock"
+                                              Text="{x:Bind Product.Description}"
+                                              UseAutoLinks="True"
+                                              UseEmphasisExtras="True"
+                                              UseListExtras="True"
+                                              UsePipeTables="True"
+                                              UseTaskLists="True" />
+                    </StackPanel>
+
+                    <ListView x:Name="ProductSpecs" 
+                              ItemsSource="{x:Bind Product.Specs}" 
+                              Margin="0 0 0 25">
+
+                        <ListView.Header>
+                            <controls:DataTable Margin="12,0,0,0">
+                                <controls:DataColumn 
+                                    Content="Key"
+                                    DesiredWidth="150"/>
+
+                                <controls:DataColumn 
+                                    Content="Value"
+                                    DesiredWidth="250"/>
+
+                            </controls:DataTable>
+                        </ListView.Header>
+
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="model:Spec">
+                                
+                                <controls:DataRow HorizontalAlignment="Left">
+                                    <TextBlock Text="{x:Bind SpecName}" 
+                                               Foreground="{StaticResource TextFillColorSecondaryBrush}"/>
+
+                                    <labsMarquee:MarqueeText Text="{x:Bind SpecValue}" 
+                                                             Direction="Left"
+                                                             Behavior="Looping"/>
+                                </controls:DataRow>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+
+                        <ListView.ItemContainerStyle>
+                            <Style BasedOn="{StaticResource DefaultListViewItemStyle}" 
+                                   TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" 
+                                        Value="Stretch" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+
+                    </ListView>
+
+                    <TextBlock Text="Отзывы"
+                               Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    
+                    <ListView ItemsSource="{x:Bind Product.Commentaries}"
+                              SelectionMode="None"
+                              Margin="-20 0 0 0"
+                              Width="450"
+                              HorizontalAlignment="Left">
+                        
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="model:Commentary">
+                                <StackPanel CornerRadius="{StaticResource ControlCornerRadius}"
+                                            Background="{StaticResource CardBackgroundFillColorSecondaryBrush}"
+                                            Margin="5"
+                                            Orientation="Horizontal">
+
+                                    <PersonPicture Height="24"
+                                                   VerticalAlignment="Top"
+                                                   Margin="15 15 10 0"/>
+
+                                    <StackPanel Spacing="10"
+                                                Padding="10">
+                                        <Grid>
+                                            <labsMarquee:MarqueeText Text="{x:Bind UserName}"
+                                                                     FontSize="18"
+                                                                     HorizontalAlignment="Left"
+                                                                     FontWeight="SemiBold"
+                                                                     Direction="Left"
+                                                                     Behavior="Looping"
+                                                                     Width="240"/>
+                                            
+                                            <TextBlock Text="{x:Bind Time, Converter={StaticResource UnixTimeStampConverter}}"
+                                                       VerticalAlignment="Center" 
+                                                       HorizontalAlignment="Right"
+                                                       FontWeight="Light"/>
+                                        </Grid>
+                                        
+                                        <TextBlock Text="{x:Bind Content}"
+                                                   TextWrapping="Wrap"
+                                                   Width="330"/>
+                                    </StackPanel>
+                                    
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                        
+                    </ListView>
+                </StackPanel>
+
+                <Grid Background="{StaticResource LayerFillColorAltBrush}" 
+                      Height="120" 
+                      VerticalAlignment="Bottom">
+                    <TextBlock VerticalAlignment="Center" 
+                               Text="{x:Bind PriceText.Text}"
+                               HorizontalAlignment="Left" 
+                               Style="{StaticResource TitleLargeTextBlockStyle}" FontSize="150"
+                               Opacity="0.02"/>
+                    
+                    <Grid Padding="25">
+                        <TextBlock x:Name="PriceText" 
+                                   VerticalAlignment="Center" 
+                                   Text="{x:Bind Product.Cost, Converter={StaticResource CostConverter}}" 
+                                   HorizontalAlignment="Left" 
+                                   Style="{StaticResource TitleLargeTextBlockStyle}"/>
+
+                        <localControls:AddToCartButton Cart="{x:Bind Cart}"
+                                                       Product="{x:Bind Product}"
+                                                       Width="150"
+                                                       VerticalAlignment="Bottom"
+                                                       HorizontalAlignment="Right"/>
+                    </Grid>
+
+                    
+
+                </Grid>
+                
+                
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Page>

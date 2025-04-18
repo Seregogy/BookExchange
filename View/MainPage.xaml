@@ -1,0 +1,98 @@
+﻿<Page
+    x:Class="Store.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:local="using:Store"
+    xmlns:model="using:Store.Model"
+    xmlns:helpers="using:Store.Helpers"
+    xmlns:view="using:Store.View"
+    xmlns:viewModel="using:Store.ViewModel"
+    xmlns:list="using:System.Collections"
+    xmlns:sys="using:System"
+    xmlns:colgen="using:System.Collections.Generic"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    muxc:BackdropMaterial.ApplyToRootOrPageBackground="True">
+
+    <Page.Resources>
+        <helpers:VisibilityConverter x:Key="VisibilityConverter"/>
+    </Page.Resources>
+    
+    <Grid>
+        <StackPanel Spacing="15" 
+                    Margin="50">
+
+            <AutoSuggestBox MaxWidth="400"
+                            PlaceholderText="Поиск по названию"
+                            TextChanged="AutoSuggestBox_TextChanged"
+                            QueryIcon="Find"
+                            QuerySubmitted="AutoSuggestBox_QuerrySubmitted"
+                            SuggestionChosen="AutoSuggestBox_SuggestionChosen"/>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          VerticalScrollMode="Auto">
+                
+                <Grid VerticalAlignment="Stretch">
+                    <GridView x:Name="Grid" 
+                              VerticalAlignment="Top" 
+                              HorizontalAlignment="Center" 
+                              SelectionMode="None"/>
+
+                    <GridView x:Name="ShimmerGrid"
+                              VerticalAlignment="Top"
+                              HorizontalAlignment="Center" 
+                              SelectionMode="None"
+                              Visibility="{x:Bind ReverseVisibility(IsLoad), Mode=OneWay}">
+
+                        <labs:Shimmer Width="250"
+                                      Height="350"/>
+                        <labs:Shimmer Width="250"
+                                      Height="350"/>
+                        <labs:Shimmer Width="250"
+                                      Height="350"/>
+                        <labs:Shimmer Width="250"
+                                      Height="350"/>
+                        <labs:Shimmer Width="250"
+                                      Height="350"/>
+                        <labs:Shimmer Width="250"
+                                      Height="350"/>
+                        <labs:Shimmer Width="250"
+                                      Height="350"/>
+                        <labs:Shimmer Width="250"
+                                      Height="350"/>
+                        <labs:Shimmer Width="250" 
+                                      Height="350"/>
+                        <labs:Shimmer Width="250" 
+                                      Height="350"/>
+                    </GridView>
+                    
+                </Grid>
+                
+            </ScrollViewer>
+        </StackPanel>
+
+        <Grid Margin="12" 
+              VerticalAlignment="Bottom" 
+              HorizontalAlignment="Left">
+            
+            <Button Margin="5"
+                    Click="LaunchCartPage">
+                <Grid>
+                    <FontIcon Glyph="&#xE7BF;"/>
+                </Grid>
+            </Button>
+
+            <muxc:InfoBadge 
+                Value="{x:Bind cart.TotalCount, Mode=OneWay}"
+                Visibility="{x:Bind cart.TotalCount, Converter={StaticResource VisibilityConverter}, Mode=OneWay}" 
+                VerticalAlignment="Top" 
+                HorizontalAlignment="Right"/>
+        </Grid>
+    </Grid>
+</Page>
