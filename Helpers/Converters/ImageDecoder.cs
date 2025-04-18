@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace Store.Helpers;
+namespace BookExchange.Helpers;
 
 public class ImageDecoder
 {

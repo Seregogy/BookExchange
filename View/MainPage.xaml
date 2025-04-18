@@ -1,14 +1,13 @@
 ﻿<Page
-    x:Class="Store.MainPage"
+    x:Class="BookExchange.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
-    xmlns:local="using:Store"
-    xmlns:model="using:Store.Model"
-    xmlns:helpers="using:Store.Helpers"
-    xmlns:view="using:Store.View"
-    xmlns:viewModel="using:Store.ViewModel"
+    xmlns:local="using:BookExchange"
+    xmlns:model="using:BookExchange.Model"
+    xmlns:helpers="using:BookExchange.Helpers"
+    xmlns:view="using:BookExchange.View"
     xmlns:list="using:System.Collections"
     xmlns:sys="using:System"
     xmlns:colgen="using:System.Collections.Generic"
@@ -27,24 +26,59 @@
     <Grid>
         <StackPanel Spacing="15" 
                     Margin="50">
-
-            <AutoSuggestBox MaxWidth="400"
-                            PlaceholderText="Поиск по названию"
-                            TextChanged="AutoSuggestBox_TextChanged"
-                            QueryIcon="Find"
-                            QuerySubmitted="AutoSuggestBox_QuerrySubmitted"
-                            SuggestionChosen="AutoSuggestBox_SuggestionChosen"/>
-
+            
             <ScrollViewer VerticalScrollBarVisibility="Auto"
                           VerticalScrollMode="Auto">
                 
-                <Grid VerticalAlignment="Stretch">
-                    <GridView x:Name="Grid" 
+                <StackPanel>
+                    <TextBlock Text="Мои книги"
+                               Style="{StaticResource TitleTextBlockStyle}"
+                               Margin="150 0 0 0"/>
+
+                    <GridView x:Name="MineBooksGrid" 
+                                VerticalAlignment="Top" 
+                                HorizontalAlignment="Center" 
+                                SelectionMode="None"/>
+
+                    <GridView x:Name="MineBooksGridShimmer"
+                                VerticalAlignment="Top"
+                                HorizontalAlignment="Center" 
+                                SelectionMode="None"
+                                Visibility="{x:Bind ReverseVisibility(IsLoad), Mode=OneWay}">
+
+                        <labs:Shimmer Width="250"
+                                      Height="350"/>
+                        <labs:Shimmer Width="250"
+                                      Height="350"/>
+                        <labs:Shimmer Width="250"
+                                      Height="350"/>
+                        <labs:Shimmer Width="250"
+                                      Height="350"/>
+                        <labs:Shimmer Width="250"
+                                      Height="350"/>
+                        <labs:Shimmer Width="250"
+                                      Height="350"/>
+                        <labs:Shimmer Width="250"
+                                      Height="350"/>
+                        <labs:Shimmer Width="250"
+                                      Height="350"/>
+                        <labs:Shimmer Width="250" 
+                                      Height="350"/>
+                        <labs:Shimmer Width="250" 
+                                      Height="350"/>
+                    </GridView>
+                    
+
+                    <TextBlock Text="Книги для обмена"
+                               Style="{StaticResource TitleTextBlockStyle}"
+                               Margin="150 0 0 0"/>
+
+                    <GridView x:Name="OthersBookGrid" 
                               VerticalAlignment="Top" 
                               HorizontalAlignment="Center" 
                               SelectionMode="None"/>
 
-                    <GridView x:Name="ShimmerGrid"
+                    <GridView x:Name="OthersBookGridShimmer"
                               VerticalAlignment="Top"
                               HorizontalAlignment="Center" 
                               SelectionMode="None"
@@ -71,28 +105,9 @@
                         <labs:Shimmer Width="250" 
                                       Height="350"/>
                     </GridView>
-                    
-                </Grid>
+                </StackPanel>
                 
             </ScrollViewer>
         </StackPanel>
-
-        <Grid Margin="12" 
-              VerticalAlignment="Bottom" 
-              HorizontalAlignment="Left">
-            
-            <Button Margin="5"
-                    Click="LaunchCartPage">
-                <Grid>
-                    <FontIcon Glyph="&#xE7BF;"/>
-                </Grid>
-            </Button>
-
-            <muxc:InfoBadge 
-                Value="{x:Bind cart.TotalCount, Mode=OneWay}"
-                Visibility="{x:Bind cart.TotalCount, Converter={StaticResource VisibilityConverter}, Mode=OneWay}" 
-                VerticalAlignment="Top" 
-                HorizontalAlignment="Right"/>
-        </Grid>
     </Grid>
 </Page>

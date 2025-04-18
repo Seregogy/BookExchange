@@ -1,0 +1,43 @@
+﻿<UserControl
+    x:Class="BookExchange.View.BookCard"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    
+    xmlns:local="using:BookExchange.View"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI.MarqueeTextRns"
+    xmlns:helpers="using:BookExchange.Helpers"
+    
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid PointerReleased="Grid_PointerReleased" 
+          CornerRadius="{StaticResource ControlCornerRadius}"
+          Width="250"
+          Height="370">
+
+        <Image x:Name="Backdrop" 
+               Stretch="UniformToFill">
+            <Image.Source>
+                <BitmapImage UriSource="{x:Bind Book.PictureUri}"/>
+            </Image.Source>
+        </Image>
+
+        <Grid HorizontalAlignment="Stretch"
+              Height="70"
+              VerticalAlignment="Bottom"
+              Background="{StaticResource SystemControlAcrylicElementBrush}">
+
+            <StackPanel Padding="10">
+                <labs:MarqueeText Text="{x:Bind Book.Name, Mode=OneWay}"
+                                  Direction="Left"
+                                  Behavior="Looping"
+                                  FontSize="16"
+                                  FontWeight="SemiBold"/>
+            </StackPanel>
+        </Grid>
+        
+    </Grid>
+</UserControl>

@@ -2,7 +2,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace Store.Helpers;
+namespace BookExchange.Helpers;
 
 public class VisibilityConverter : IValueConverter
 {

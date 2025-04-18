@@ -2,9 +2,9 @@
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace Store.Helpers;
+namespace BookExchange.Helpers;
 
-public partial class StringToImageConverter : IValueConverter
+public partial class UriToImageConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {

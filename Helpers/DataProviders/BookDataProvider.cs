@@ -1,18 +1,17 @@
-﻿using Newtonsoft.Json;
-using Store.Model;
+﻿using BookExchange.Model;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 
-namespace Store.Helpers.DataProviders;
+namespace BookExchange.Helpers.DataProviders;
 
 public class BookDataProvider : INotifyPropertyChanged
 {
-    public static List<Product> Data { get; private set; } = [];
+    public static List<Book> MineBooks { get; private set; } = [];
+    public static List<Book> BooksToExchange { get; private set; } = [];
 
     private static BookDataProvider? instance;
 
@@ -25,22 +24,14 @@ public class BookDataProvider : INotifyPropertyChanged
         return instance;
     }
 
-    public async Task LoadDataAsync()
+    public static async Task LoadDataAsync()
     {
-        try
-        {
-            StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(GlobalConst.DEFAULT_PRODUCT_JSON_PATH);
-            string json = await FileIO.ReadTextAsync(file);
+        StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(GlobalConst.DEFAULT_PRODUCT_JSON_PATH);
+        string json = await FileIO.ReadTextAsync(file);
 
-            Data = [.. JsonConvert.DeserializeObject<Product[]>(json)!];
+        var jObj = JObject.Parse(json);
 
-            Thread.Sleep(1000);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex);
-            Debug.WriteLine(ex.Message);
-            Debug.WriteLine(ex.StackTrace);
-        }
+        MineBooks = jObj[nameof(MineBooks)]!.ToObject<List<Book>>()!;
+        BooksToExchange = jObj[nameof(BooksToExchange)]!.ToObject<List<Book>>()!;
     }
 }

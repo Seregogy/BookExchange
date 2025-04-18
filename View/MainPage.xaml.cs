@@ -1,10 +1,8 @@
-﻿using Store.Helpers.DataProviders;
-using Store.View;
-using Store.ViewModel;
-using System.Collections.Generic;
+﻿using BookExchange.Model;
+using BookExchange.Helpers.DataProviders;
+using BookExchange.View;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.UI.Core;
@@ -13,13 +11,11 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
-namespace Store;
+namespace BookExchange;
 
 public sealed partial class MainPage : Page, INotifyPropertyChanged
 {
-    private ObservableCollection<ProductViewModel> products = new();
-    private CartViewModel cart;
-    private BookDataProvider productDataProvider;
+    private ObservableCollection<Book> products = [];
 
     private bool isLoad;
     public bool IsLoad
@@ -33,8 +29,6 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         }
     }
 
-    private static UIElement? lastSelected;
-
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public MainPage()
@@ -46,19 +40,17 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
     private void InitMainPage()
     {
-        productDataProvider = BookDataProvider.Init();
-        cart = CartViewModel.Init();
-
         _ = Task.Run(async () =>
         {
-            await productDataProvider!.LoadDataAsync();
-
-            products = [.. BookDataProvider.Data.Select(x => new ProductViewModel(x))];
+            await BookDataProvider.LoadDataAsync();
 
             _ = Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
             {
-                foreach (var product in products)
-                    Grid.Items.Add(new ProductCard(product, LaunchProductPage));
+                foreach (var product in BookDataProvider.MineBooks)
+                    MineBooksGrid.Items.Add(new BookCard(product, LaunchBookPage));
+
+                foreach (var product in BookDataProvider.BooksToExchange)
+                    OthersBookGrid.Items.Add(new BookCard(product, LaunchBookPage));
 
                 IsLoad = true;
             });
@@ -72,52 +64,17 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         ConnectedAnimationService
             .GetForCurrentView()
             .GetAnimation("DirectConnectedAnimation")?
-            .TryStart(ShimmerGrid);
+            .TryStart(MineBooksGridShimmer);
     }
 
-    private void LaunchCartPage(object sender, RoutedEventArgs e)
-    {
-        Frame.Navigate(typeof(ExchangePage), null, new SlideNavigationTransitionInfo());
-    }
-
-    public void LaunchProductPage(object sender, ProductViewModel? productViewModel, UIElement uiElement)
+    public void LaunchBookPage(object sender, Book? book, UIElement uiElement)
     {
         var connectedAnimation = ConnectedAnimationService
                                     .GetForCurrentView()
-                                    .PrepareToAnimate("DirectConnectedAnimation", uiElement ?? Grid);
+                                    .PrepareToAnimate("DirectConnectedAnimation", uiElement ?? MineBooksGrid);
         
         connectedAnimation.Configuration = new DirectConnectedAnimationConfiguration();
-        Frame.Navigate(typeof(BookPage), productViewModel, new DrillInNavigationTransitionInfo());
-    }
-
-    private void AutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
-    {
-        List<string> submittedProducts;
-
-        if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
-        {
-            var userValue = sender.Text.ToLower().Replace(" ", "");
-
-            submittedProducts = products.Select(x => x.Name).Where(x => x.ToLower().Replace(" ", "").Contains(userValue)).ToList();
-        }
-        else
-        {
-            submittedProducts = new List<string>();
-        }
-
-        sender.ItemsSource = submittedProducts;
-    }
-
-    private void AutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
-    {
-        if (args.SelectedItem != null)
-            sender.Text = args.SelectedItem.ToString();
-    }
-
-    private void AutoSuggestBox_QuerrySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
-    {
-        if (args.QueryText != null)
-            LaunchProductPage(this, products.Where(x => x.Name.Equals(args.QueryText)).First(), lastSelected);
+        Frame.Navigate(typeof(BookPage), book, new DrillInNavigationTransitionInfo());
     }
 
     private void OnPropertyChanged([CallerMemberName] string property = "") =>

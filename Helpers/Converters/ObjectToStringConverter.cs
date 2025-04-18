@@ -1,7 +1,7 @@
 ﻿using System;
 using Windows.UI.Xaml.Data;
 
-namespace Store.Helpers;
+namespace BookExchange.Helpers;
 
 public class ObjectToStringConverter : IValueConverter
 {

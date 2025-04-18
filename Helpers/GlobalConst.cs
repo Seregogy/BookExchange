@@ -1,10 +1,8 @@
 ﻿using System;
-using Windows.Storage;
 
-namespace Store.Helpers;
+namespace BookExchange.Helpers;
 
 public static class GlobalConst
 {
-    private static string directory = ApplicationData.Current.LocalFolder.Path;
-    public static readonly Uri DEFAULT_PRODUCT_JSON_PATH = new Uri("ms-appx:///Resources/products.json");
+    public static readonly Uri DEFAULT_PRODUCT_JSON_PATH = new Uri("ms-appx:///Resources/books.json");
 }

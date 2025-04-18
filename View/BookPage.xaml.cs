@@ -1,35 +1,23 @@
 ﻿using CommunityToolkit.Labs.WinUI.MarkdownTextBlock;
-using Store.ViewModel;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using BookExchange.Model;
 
-namespace Store.View;
+namespace BookExchange.View;
 
 public sealed partial class BookPage : Page, INotifyPropertyChanged
 {
-    private ProductViewModel productViewModel;
-    private CartViewModel cart;
-
-    public CartViewModel Cart 
+    private Book? book;
+    public Book? Book 
     { 
-        get => cart; 
+        get => book; 
         set
         {
-            cart = value;
-
-            OnPropertyChanged();
-        }
-    }
-    public ProductViewModel Product 
-    { 
-        get => productViewModel; 
-        set
-        {
-            productViewModel = value;
+            book = value;
 
             OnPropertyChanged();
         }
@@ -51,17 +39,11 @@ public sealed partial class BookPage : Page, INotifyPropertyChanged
             .GetAnimation("DirectConnectedAnimation")?
             .TryStart(ImageFlipView);
 
-        if (e.Parameter is ProductViewModel productViewModel)
+        if (e.Parameter is Book book)
         {
-            Product = productViewModel;
+            Book = book;
             MarkdownTextBlock.Config = new MarkdownConfig();
-            Cart = CartViewModel.Init();
         }
-    }
-
-    private void PipsPager_SelectedIndexChanged(Microsoft.UI.Xaml.Controls.PipsPager sender, Microsoft.UI.Xaml.Controls.PipsPagerSelectedIndexChangedEventArgs args)
-    {
-        ImageFlipView.SelectedIndex = sender.SelectedPageIndex;
     }
 
     private void BackButton_Click(object sender, RoutedEventArgs e)
@@ -75,4 +57,9 @@ public sealed partial class BookPage : Page, INotifyPropertyChanged
 
     private void OnPropertyChanged([CallerMemberName] string property = "") =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+
+    private void LaunchExchangePage(Windows.UI.Xaml.Documents.Hyperlink sender, Windows.UI.Xaml.Documents.HyperlinkClickEventArgs args)
+    {
+        Frame.Navigate(typeof(ExchangePage));
+    }
 }
