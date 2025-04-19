@@ -36,8 +36,8 @@ public sealed partial class BookPage : Page, INotifyPropertyChanged
 
         ConnectedAnimationService
             .GetForCurrentView()
-            .GetAnimation("DirectConnectedAnimation")?
-            .TryStart(ImageFlipView);
+            .GetAnimation(nameof(BookPage))?
+            .TryStart(ImageBorder);
 
         if (e.Parameter is Book book)
         {
@@ -46,12 +46,11 @@ public sealed partial class BookPage : Page, INotifyPropertyChanged
         }
     }
 
-    private void BackButton_Click(object sender, RoutedEventArgs e)
+    private void BackButtonClick(object sender, RoutedEventArgs e)
     {
-        ConnectedAnimationService
-            .GetForCurrentView()
-            .PrepareToAnimate("DirectConnectedAnimation", ImageFlipView);
+        var anim = ConnectedAnimationService.GetForCurrentView().PrepareToAnimate(nameof(MainPage), ImageBorder);
 
+        anim.Configuration = new DirectConnectedAnimationConfiguration();
         Frame.GoBack(new SlideNavigationTransitionInfo());
     }
 
@@ -60,6 +59,9 @@ public sealed partial class BookPage : Page, INotifyPropertyChanged
 
     private void LaunchExchangePage(Windows.UI.Xaml.Documents.Hyperlink sender, Windows.UI.Xaml.Documents.HyperlinkClickEventArgs args)
     {
-        Frame.Navigate(typeof(ExchangePage));
+        var anim = ConnectedAnimationService.GetForCurrentView().PrepareToAnimate(nameof(ExchangePage), ImageBorder);
+        anim.Configuration = new DirectConnectedAnimationConfiguration();
+
+        Frame.Navigate(typeof(ExchangePage), new ExchangePageLaunchData(Book!, null), new DrillInNavigationTransitionInfo());
     }
 }

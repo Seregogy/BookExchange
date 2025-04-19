@@ -22,7 +22,7 @@
                 Grid.Column="0"
                 VerticalAlignment="Top"
                 HorizontalAlignment="Left"
-                Click="BackButton_Click"
+                Click="BackButtonClick"
                 Background="{StaticResource SystemControlAcrylicElementBrush}"
                 IsEnabled="{x:Bind Frame.CanGoBack, Mode=OneWay}" 
                 ToolTipService.ToolTip="Back">
@@ -39,7 +39,8 @@
                     VerticalAlignment="Center"
                     Spacing="30">
 
-            <Border CornerRadius="4"
+            <Border x:Name="ImageBorder"
+                    CornerRadius="4"
                     Height="500"
                     Width="350"
                     VerticalAlignment="Top"
@@ -65,6 +66,7 @@
 
                         <StackPanel x:Name="ProductHeader" 
                                     Spacing="7">
+
                             <TextBlock Text="{x:Bind Book.Name}" 
                                        Style="{StaticResource TitleLargeTextBlockStyle}"/>
 

@@ -1,22 +1,18 @@
 ﻿using BookExchange.Model;
 using BookExchange.Helpers.DataProviders;
 using BookExchange.View;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using System.Diagnostics;
 
 namespace BookExchange;
 
 public sealed partial class MainPage : Page, INotifyPropertyChanged
 {
-    private ObservableCollection<Book> products = [];
-
     private bool isLoad;
     public bool IsLoad
     {
@@ -31,6 +27,8 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    private static UIElement? lastSelected;
+
     public MainPage()
     {
         InitializeComponent();
@@ -40,21 +38,10 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
     private void InitMainPage()
     {
-        _ = Task.Run(async () =>
-        {
-            await BookDataProvider.LoadDataAsync();
+        BookDataProvider.LoadData();
+        InitGridViews();
 
-            _ = Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
-            {
-                foreach (var product in BookDataProvider.MineBooks)
-                    MineBooksGrid.Items.Add(new BookCard(product, LaunchBookPage));
-
-                foreach (var product in BookDataProvider.BooksToExchange)
-                    OthersBookGrid.Items.Add(new BookCard(product, LaunchBookPage));
-
-                IsLoad = true;
-            });
-        });
+        IsLoad = true;
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -63,17 +50,37 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
         ConnectedAnimationService
             .GetForCurrentView()
-            .GetAnimation("DirectConnectedAnimation")?
-            .TryStart(MineBooksGridShimmer);
+            .GetAnimation(nameof(MainPage))?
+            .TryStart(lastSelected ?? MineBooksGrid);
+    }
+
+    private void InitGridViews()
+    {
+        MineBooksGrid.Items.Clear();
+        OthersBookGrid.Items.Clear();
+
+        foreach (var book in BookDataProvider.MineBooks)
+        {
+            MineBooksGrid.Items.Add(new BookCard(book, LaunchBookPage));
+            Debug.WriteLine(book);
+        }
+
+        Debug.WriteLine("---------------\n");
+
+        foreach (var book in BookDataProvider.BooksToExchange)
+        {
+            OthersBookGrid.Items.Add(new BookCard(book, LaunchBookPage));
+            Debug.WriteLine(book);
+        }
     }
 
     public void LaunchBookPage(object sender, Book? book, UIElement uiElement)
     {
-        var connectedAnimation = ConnectedAnimationService
-                                    .GetForCurrentView()
-                                    .PrepareToAnimate("DirectConnectedAnimation", uiElement ?? MineBooksGrid);
-        
-        connectedAnimation.Configuration = new DirectConnectedAnimationConfiguration();
+        lastSelected = uiElement;
+
+        var anim = ConnectedAnimationService.GetForCurrentView().PrepareToAnimate(nameof(BookPage), uiElement ?? MineBooksGrid);
+
+        anim.Configuration = new DirectConnectedAnimationConfiguration();
         Frame.Navigate(typeof(BookPage), book, new DrillInNavigationTransitionInfo());
     }
 

@@ -31,14 +31,14 @@ public sealed partial class BookCard : UserControl, INotifyPropertyChanged
         InitializeComponent();
     }
 
-    public BookCard(Book productViewModel, Action<object, Book?, UIElement> onClick) : this()
+    public BookCard(Book book, Action<object, Book?, UIElement> onClick = null) : this()
     {
-        Book = productViewModel;
+        Book = book;
 
         this.onClick = onClick;
     }
 
-    private void OnPropertyChanged([CallerMemberName] string property = "") =>
+    public void OnPropertyChanged([CallerMemberName] string property = "") =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
 
     private void Grid_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)

@@ -8,10 +8,7 @@
     xmlns:helpers="using:BookExchange.Helpers"
     
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="400">
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
 
     <Grid PointerReleased="Grid_PointerReleased" 
           CornerRadius="{StaticResource ControlCornerRadius}"
@@ -19,7 +16,8 @@
           Height="370">
 
         <Image x:Name="Backdrop" 
-               Stretch="UniformToFill">
+               Stretch="UniformToFill"
+               HorizontalAlignment="Center">
             <Image.Source>
                 <BitmapImage UriSource="{x:Bind Book.PictureUri}"/>
             </Image.Source>
